@@ -1,0 +1,44 @@
+#################################
+# Logger - example configuration #
+#################################
+
+# This is an example definition of Logger service.
+# In order to use Logger, you first must call Logger::setConfig($pathToYourConfig),
+# and then just use the LoggerTrait (eg. $this->logger('Webiny'))
+#
+#
+Logger:
+    Parameters:
+        Logger.Class: \Webiny\Component\Logger\Logger
+        Logger.Driver.Class: \Webiny\Component\Logger\Drivers\Webiny
+        Logger.Formatter.Tray.Class: \Webiny\Component\Logger\Drivers\Webiny\Formatters\WebinyTrayFormatter
+        Logger.Processor.FileLine.Class: \Webiny\Component\Logger\Drivers\Webiny\Processors\FileLineProcessor
+        Logger.Processor.MemoryUsage.Class: \Webiny\Component\Logger\Drivers\Webiny\Processors\MemoryUsageProcessor
+    Services:
+        UdpHandler:
+            Class: \Webiny\Component\Logger\Drivers\Webiny\Handlers\UdpHandler
+            Arguments: [[], true, true]
+            Calls:
+                - [addProcessor, [%Logger.Processor.FileLine.Class%]]
+                - [addProcessor, [%Logger.Processor.MemoryUsage.Class%]]
+                - [setFormatter, [%Logger.Formatter.Tray.Class%]]
+        Webiny:
+            Class: %Logger.Class%
+            Arguments: [System, %Logger.Driver.Class%]
+            Calls:
+                - [addHandler, [@Logger.UdpHandler]]
+    Configs:
+        Formatters:
+            Default:
+                DateFormat: 'Y-m-d H:i:s'
+            File:
+                RecordFormat: '%datetime% [%name%] [%level%]: %message%\nContext: %context%\nExtra: %extra%\n\n'
+            WebinyTray:
+                Method: new_notification
+                DateFormat: 'Y-m-d H:i:s'
+                Tray: 192.168.1.28:5000
+        Handlers:
+            Udp:
+                Host: 192.168.249.128:41234
+    ClassLoader:
+        Psr: '/var/www/Vendors/Psr'
