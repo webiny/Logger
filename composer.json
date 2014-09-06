@@ -20,6 +20,7 @@
 		"php": ">=5.4.0",
 		"webiny/class-loader": "dev-master",
 		"webiny/std-lib": "dev-master",
+		"webiny/config": "dev-master",
 		"psr/log": "dev-master"
 	},
 	"require-dev": {
@@ -32,7 +33,7 @@
 	},
 	"extras": {
 		"branch-alias": {
-			"dev-master": "~0.9"
+			"dev-master": "1.0.0-RC1"
 		}
 	}
 }

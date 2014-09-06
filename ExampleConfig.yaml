@@ -40,5 +40,6 @@ Logger:
         Handlers:
             Udp:
                 Host: 192.168.249.128:41234
+    # You don't need this part if you are using Composer autoload.
     ClassLoader:
         Psr: '/var/www/Vendors/Psr'
