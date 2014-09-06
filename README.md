@@ -1,7 +1,7 @@
 Logger
 ======
 
-A PSR-2 log component.
+A PSR-3 log component.
 
 Install the component
 ---------------------
