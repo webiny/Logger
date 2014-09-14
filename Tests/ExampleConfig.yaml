@@ -35,5 +35,3 @@ Logger:
                 DateFormat: 'H:i:s d-m-Y'
             File:
                 RecordFormat: '%datetime% [%name%] [%level%]: %message%\nContext: %context%\nExtra: %extra%\n\n'
-    ClassLoader:
-        Psr: '../Psr'
