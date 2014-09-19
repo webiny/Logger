@@ -7,7 +7,7 @@
  * @license      http://www.webiny.com/framework/license
  * @package      WebinyFramework
  */
-namespace Webiny\Component\Logger\Drivers\Webiny\Formatters\Exceptions;
+namespace Webiny\Component\Logger\Driver\Webiny\Formatter\Exception;
 
 use Webiny\Component\StdLib\Exception\ExceptionAbstract;
 
@@ -15,13 +15,13 @@ use Webiny\Component\StdLib\Exception\ExceptionAbstract;
 /**
  * Udp handler exception class.
  *
- * @package      Webiny\Component\Logger\Drivers\Webiny\Handlers\Exceptions
+ * @package      Webiny\Component\Logger\Driver\Webiny\Handler\Exception
  */
-class WebinyTrayFormatterException extends ExceptionAbstract
+class FileFormatterException extends ExceptionAbstract
 {
     const CONFIG_NOT_FOUND = 101;
 
-    protected static $_messages = [
-        101 => 'Webiny tray formatter config was not found!',
+    static protected $_messages = [
+        101 => 'File formatter config was not found!',
     ];
 }

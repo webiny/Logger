@@ -5,25 +5,19 @@
  * @copyright Copyright Webiny LTD
  */
 
-namespace Webiny\Component\Logger\Drivers\Webiny\Handlers;
+namespace Webiny\Component\Logger\Driver\Webiny\Handler;
 
-use Webiny\Component\Logger\Bridge\Webiny\FormatterAbstract;
-use Webiny\Component\Logger\Bridge\Webiny\HandlerAbstract;
-use Webiny\Component\Logger\Bridge\Webiny\Record;
-use Webiny\Component\Logger\Drivers\Webiny\Formatters\FileFormatter;
+use Webiny\Component\Logger\Driver\Webiny\Formatter\FileFormatter;
+use Webiny\Component\Logger\Driver\Webiny\Record;
 use Webiny\Component\Logger\LoggerException;
-use Webiny\Component\StdLib\StdLibTrait;
-use Webiny\Component\StdLib\StdObject\StdObjectException;
 
 /**
  * FileHandler class stores log messages to log file
  *
- * @package         Webiny\Component\Logger\Drivers\Webiny\Handlers
+ * @package         Webiny\Component\Logger\Driver\Webiny\Handler
  */
 class FileHandler extends HandlerAbstract
 {
-    use StdLibTrait;
-
     private $_file;
 
     public function __construct($file, $levels = [], $bubble = true, $buffer = false)
@@ -46,7 +40,7 @@ class FileHandler extends HandlerAbstract
      */
     protected function write(Record $record)
     {
-        file_put_contents($this->_file, $record->formatted, FILE_APPEND);
+        file_put_contents($this->_file, $record->getFormattedRecord(), FILE_APPEND);
     }
 
     /**

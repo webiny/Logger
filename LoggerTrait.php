@@ -8,7 +8,7 @@
 namespace Webiny\Component\Logger;
 
 use Webiny\Component\Logger\Bridge\LoggerDriverInterface;
-use Webiny\Component\Logger\Drivers\NullDriver;
+use Webiny\Component\Logger\Driver\NullDriver;
 use Webiny\Component\ServiceManager\ServiceManager;
 use Webiny\Component\ServiceManager\ServiceManagerException;
 

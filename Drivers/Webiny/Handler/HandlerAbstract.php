@@ -4,15 +4,16 @@
  *
  * @copyright Copyright Webiny LTD
  */
-namespace Webiny\Component\Logger\Bridge\Webiny;
+namespace Webiny\Component\Logger\Driver\Webiny\Handler;
 
-use Webiny\Component\Logger\Bridge\LoggerException;
+use Webiny\Component\Logger\Driver\Webiny\Formatter\FormatterInterface;
+use Webiny\Component\Logger\Driver\Webiny\Record;
+use Webiny\Component\Logger\LoggerException;
 use Webiny\Component\StdLib\StdLibTrait;
-use Webiny\Component\Logger\Bridge\Webiny\Record;
 
 /**
  * Base Handler class providing the Handler structure
- * @package Webiny\Component\Logger\Bridge\Webiny
+ * @package Webiny\Component\Logger\Driver\Webiny\Handler
  */
 abstract class HandlerAbstract
 {
@@ -28,6 +29,9 @@ abstract class HandlerAbstract
     protected $_formatter = null;
     protected $_processors = [];
     protected $_records = [];
+
+    private $_processorInterfaceClass = '\Webiny\Component\Logger\Driver\Webiny\Processor\ProcessorInterface';
+    private $_formatterInterfaceClass = '\Webiny\Component\Logger\Driver\Webiny\Formatter\FormatterInterface';
 
     /**
      * Writes the record down to the log of the implementing handler
@@ -85,7 +89,7 @@ abstract class HandlerAbstract
             return true;
         }
 
-        return $this->_levels->inArray($record->level);
+        return $this->_levels->inArray($record->getLevel());
     }
 
     /**
@@ -113,11 +117,9 @@ abstract class HandlerAbstract
      */
     public function addProcessor($callback, $processBufferRecord = false)
     {
-        if (!is_callable($callback) && !$this->isInstanceOf($callback,
-                                                            '\Webiny\Component\Logger\Bridge\Webiny\ProcessorInterface'
-            )
-        ) {
-            throw new \InvalidArgumentException('Processor must be valid callable or an instance of \Webiny\Component\Logger\Bridge\Webiny\ProcessorInterface');
+        if (!is_callable($callback) && !$this->isInstanceOf($callback, $this->_processorInterfaceClass)) {
+            throw new \InvalidArgumentException('Processor must be valid callable or an instance of ' . $this->_processorInterfaceClass
+            );
         }
 
         if ($processBufferRecord) {
@@ -173,7 +175,7 @@ abstract class HandlerAbstract
     {
 
         foreach ($this->_processors as $processor) {
-            if ($this->isInstanceOf($processor, '\Webiny\Component\Logger\Bridge\Webiny\ProcessorInterface')) {
+            if ($this->isInstanceOf($processor, $this->_processorInterfaceClass)) {
                 $processor->processRecord($record);
             } else {
                 call_user_func($processor, $record);
@@ -192,7 +194,7 @@ abstract class HandlerAbstract
     {
         $record = new Record();
         $formatter = $this->_getFormatter();
-        if ($this->isInstanceOf($formatter, '\Webiny\Component\Logger\Bridge\Webiny\FormatterInterface')) {
+        if ($this->isInstanceOf($formatter, $this->_formatterInterfaceClass)) {
             $formatter->formatRecords($records, $record);
         }
 
@@ -202,17 +204,16 @@ abstract class HandlerAbstract
     }
 
     /**
-     * @throws \Webiny\Component\Logger\Bridge\LoggerException
+     * @throws \Webiny\Component\Logger\LoggerException
      * @return FormatterInterface Instance of formatter to use for record formatting
      */
     private function _getFormatter()
     {
         if ($this->isNull($this->_formatter)) {
             $this->_formatter = $this->_getDefaultFormatter();
-            if (!$this->isInstanceOf($this->_formatter, '\Webiny\Component\Logger\Bridge\Webiny\FormatterInterface')) {
-                throw new LoggerException('Formatter must be an instance of \Webiny\Component\Logger\Bridge\Webiny\FormatterInterface');
+            if (!$this->isInstanceOf($this->_formatter, $this->_formatterInterfaceClass)) {
+                throw new LoggerException('Formatter must be an instance of ' . $this->_formatterInterfaceClass);
             }
-
         }
 
         return $this->_formatter;

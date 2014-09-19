@@ -4,11 +4,13 @@
  *
  * @copyright Copyright Webiny LTD
  */
-namespace Webiny\Component\Logger\Bridge\Webiny;
+namespace Webiny\Component\Logger\Driver\Webiny\Formatter;
+
+use Webiny\Component\Logger\Driver\Webiny\Record;
 
 /**
- * Interface for formatters
- * @package Webiny\Component\Logger\Bridge\Webiny
+ * Interface for Formatter
+ * @package Webiny\Component\Logger\Driver\Webiny\Formatter
  */
 interface FormatterInterface
 {
@@ -16,7 +18,7 @@ interface FormatterInterface
      * Formats a log record.
      * Change Record object as you see fit.
      *
-     * Assign formatted value to: $record->formatted
+     * Assign formatted value using $record->setFormattedRecord($formattedRecord)
      *
      * @param Record $record A record to format
      */
@@ -27,7 +29,7 @@ interface FormatterInterface
      * The second parameter contains the Record object that will be passed to HandlerAbstract->write($record) method.
      * Modify the Record object as you see fit.
      *
-     * Assign formatted value to: $record->formatted
+     * Assign formatted value using $record->setFormattedRecord($formattedRecord)
      *
      * @param  array $records A set of records to format
      * @param Record $record  A final record object

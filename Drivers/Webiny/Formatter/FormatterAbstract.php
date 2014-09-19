@@ -5,14 +5,15 @@
  * @copyright Copyright Webiny LTD
  */
 
-namespace Webiny\Component\Logger\Bridge\Webiny;
+namespace Webiny\Component\Logger\Driver\Webiny\Formatter;
 
+use Webiny\Component\Logger\Driver\Webiny\Record;
 use Webiny\Component\Logger\Logger;
 use Webiny\Component\StdLib\StdLibTrait;
 
 /**
  * Base Formatter class providing the Handler structure
- * @package Webiny\Component\Logger\Bridge\Webiny
+ * @package Webiny\Component\Logger\Driver\Webiny\Formatter
  */
 abstract class FormatterAbstract implements FormatterInterface
 {
@@ -25,11 +26,11 @@ abstract class FormatterAbstract implements FormatterInterface
      */
     public function normalizeValues(Record $record)
     {
-        foreach ($record as $key => $value) {
-            $record->$key = $this->_normalizeValue($value);
-        }
 
-        return $record;
+        foreach ($record as $key => $value) {
+            $setter = 'set' . ucfirst($key);
+            $record->$setter($this->_normalizeValue($value));
+        }
     }
 
     private function _normalizeValue($data)
@@ -40,10 +41,10 @@ abstract class FormatterAbstract implements FormatterInterface
 
         if ($this->isStdObject($data)) {
             if ($this->isDateTimeObject($data)) {
-                if ($this->isNull($this->_config->date_format)) {
-                    $format = Logger::getConfig()->Configs->Formatters->Default->DateFormat;
+                if ($this->isNull($this->_config->DateFormat)) {
+                    $format = Logger::getConfig()->Configs->Formatter->Default->DateFormat;
                 } else {
-                    $format = $this->_config->date_format;
+                    $format = $this->_config->DateFormat;
                 }
 
                 return $data->format($format);
