@@ -19,17 +19,17 @@ class LoggerTest extends PHPUnit_Framework_TestCase
     const CONFIG = '/ExampleConfig.yaml';
 
     /**
-     * @dataProvider driverSet
+     * @dataProvider DriverSet
      */
-    public function testConstructor($mongo)
+    function testConstructor($logger)
     {
-        $this->assertInstanceOf('\Webiny\Component\Logger\Logger', $mongo);
+        $this->assertInstanceOf('\Webiny\Component\Logger\Logger', $logger);
     }
 
     /**
-     * @dataProvider driverSet
+     * @dataProvider DriverSet
      */
-    public function testLogger(Logger $logger)
+    function testLogger(Logger $logger)
     {
         $fileLocation = Logger::getConfig()->Parameters['Logger.LogFile'];
         $logger->error('Test error message!', ['customValue' => 'Webiny']);
@@ -43,11 +43,11 @@ class LoggerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($logContents, 'file') !== false);
         $this->assertTrue(strpos($logContents, 'line') !== false);
         // Make sure MemoryUsageProcessor was triggered
-        $this->assertTrue(strpos($logContents, 'memory_usage') !== false);
+        $this->assertTrue(strpos($logContents, 'memoryUsage') !== false);
         unlink($fileLocation);
     }
 
-    public function driverSet()
+    function DriverSet()
     {
         Logger::setConfig(realpath(__DIR__ . '/' . self::CONFIG));
 

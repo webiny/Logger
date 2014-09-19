@@ -9,7 +9,7 @@ namespace Webiny\Component\Logger;
 
 use Webiny\Component\Logger\Bridge\LoggerAbstract;
 use Webiny\Component\Logger\Bridge\LoggerDriverInterface;
-use Webiny\Component\Logger\Drivers\Webiny;
+use Webiny\Component\Logger\Driver\Webiny;
 use Webiny\Component\StdLib\ComponentTrait;
 use Webiny\Component\StdLib\StdLibTrait;
 
@@ -26,7 +26,7 @@ class Logger
     private static $_defaultConfig = [
         'Parameters'  => [
             'Logger.Class'        => '\Webiny\Component\Logger\Logger',
-            'Logger.Driver.Class' => '\Webiny\Component\Logger\Drivers\NullDriver'
+            'Logger.Driver.Class' => '\Webiny\Component\Logger\Driver\NullDriver'
         ],
         'Services'    => [
             'Webiny' => [
@@ -36,6 +36,9 @@ class Logger
                     '%Logger.Driver.Class%'
                 ]
             ]
+        ],
+        'ClassLoader' => [
+            'Psr' => '../Psr'
         ]
     ];
 
@@ -65,18 +68,6 @@ class Logger
     }
 
     /**
-     * Get Webiny logger
-     *
-     * @param $name
-     *
-     * @return Webiny Webiny logger instance
-     */
-    public static function Webiny($name)
-    {
-        return new static($name, new Webiny());
-    }
-
-    /**
      * Call a method on driver instance
      * Since we are wrapping an actual driver instance with this Logger object, we need a way to implement this magic method to forward the call to driver instance
      *
@@ -86,7 +77,7 @@ class Logger
      * @return mixed
      * @throws LoggerException
      */
-    public function __call($name, $arguments)
+    function __call($name, $arguments)
     {
         if (method_exists($this->_driverInstance, $name)) {
             return call_user_func_array([
@@ -95,7 +86,8 @@ class Logger
                                         ], $arguments
             );
         }
-        throw new LoggerException('Call to undefined method "' . $name . '" on Logger object! Make sure your logger driver provides the required method!');
+        throw new LoggerException('Call to undefined method "' . $name . '" on Logger object! Make sure your logger driver provides the required method!'
+        );
     }
 
 

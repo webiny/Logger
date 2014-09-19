@@ -5,18 +5,17 @@
  * @copyright Copyright Webiny LTD
  */
 
-namespace Webiny\Component\Logger\Drivers\Webiny\Formatters;
+namespace Webiny\Component\Logger\Driver\Webiny\Formatter;
 
-use Webiny\Component\Logger\Bridge\Webiny\FormatterAbstract;
-use Webiny\Component\Logger\Bridge\Webiny\Record;
-use Webiny\Component\Logger\Drivers\Webiny\Formatters\Exceptions\FileFormatterException;
+use Webiny\Component\Logger\Driver\Webiny\Formatter\Exception\FileFormatterException;
+use Webiny\Component\Logger\Driver\Webiny\Record;
 use Webiny\Component\Logger\Logger;
 
 
 /**
  * Formats incoming records into a one-line string
  *
- * @package         Webiny\Component\Logger\Formatters
+ * @package Webiny\Component\Logger\Driver\Webiny\Formatter
  */
 class FileFormatter extends FormatterAbstract
 {
@@ -28,11 +27,11 @@ class FileFormatter extends FormatterAbstract
      * @param string $format     The format of the message
      * @param string $dateFormat The format of the timestamp: one supported by DateTime::format
      *
-     * @throws Exceptions\FileFormatterException
+     * @throws Exception\FileFormatterException
      */
     public function __construct($format = null, $dateFormat = null)
     {
-        $this->_config = Logger::getConfig()->get('Configs.Formatters.File');
+        $this->_config = Logger::getConfig()->get('Configs.Formatter.File');
         if ($this->isNull($this->_config)) {
             throw new FileFormatterException(FileFormatterException::CONFIG_NOT_FOUND);
         }
@@ -41,29 +40,31 @@ class FileFormatter extends FormatterAbstract
         }
 
         $this->_format = $format;
-        $this->dateFormat = $dateFormat !== null ? $dateFormat : $this->_config->DateFormat;
+        $this->_dateFormat = $dateFormat !== null ? $dateFormat : $this->_config->DateFormat;
     }
 
     public function formatRecord(Record $record)
     {
 
         // Call this to execute standard value normalization
-        $record = $this->normalizeValues($record);
+        $this->normalizeValues($record);
 
         $output = $this->str($this->_format);
 
         // Handle extra values if case specific values are given in record format
-        foreach ($record->extra as $var => $val) {
+        $extraData = $record->getExtra();
+        foreach ($extraData as $var => $val) {
             if ($output->contains('%extra.' . $var . '%')) {
                 $output->replace('%extra.' . $var . '%', $val);
-                unset($record->extra[$var]);
+                unset($extraData[$var]);
             }
         }
+        $record->setExtra($extraData);
 
         // Handle main record values
         foreach ($record as $var => $val) {
             if ($this->isDateTimeObject($val)) {
-                $val = $val->format($this->dateFormat);
+                $val = $val->format($this->_dateFormat);
             }
             if (is_object($val)) {
                 if (method_exists($val, '__toString')) {
@@ -75,7 +76,7 @@ class FileFormatter extends FormatterAbstract
             $output->replace('%' . $var . '%', $val);
         }
 
-        $record->formatted = $output->val();
+        $record->setFormattedRecord($output->val());
 
         return $output->val();
     }
@@ -87,6 +88,6 @@ class FileFormatter extends FormatterAbstract
             $message .= $this->formatRecord($r);
         }
 
-        $record->formatted = $message;
+        $record->setFormattedRecord($message);
     }
 }

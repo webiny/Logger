@@ -5,14 +5,12 @@
  * @copyright Copyright Webiny LTD
  */
 
-namespace Webiny\Component\Logger\Drivers;
+namespace Webiny\Component\Logger\Driver;
 
-use Webiny\Component\Logger\Bridge\LoggerAbstract;
 use Webiny\Component\Logger\Bridge\LoggerDriverInterface;
-use Webiny\Component\Logger\Bridge\LoggerHandlerAbstract;
 use Webiny\Component\Logger\Bridge\LoggerLevel;
-use Webiny\Component\Logger\Bridge\Webiny\HandlerAbstract;
-use Webiny\Component\Logger\Bridge\Webiny\Record;
+use Webiny\Component\Logger\Driver\Webiny\Handler\HandlerAbstract;
+use Webiny\Component\Logger\Driver\Webiny\Record;
 use Webiny\Component\Logger\LoggerException;
 use Webiny\Component\StdLib\StdLibTrait;
 use Webiny\Component\StdLib\StdObject\ArrayObject\ArrayObject;
@@ -21,7 +19,7 @@ use Webiny\Component\StdLib\StdObject\ArrayObject\ArrayObject;
  * Webiny logger driver covers most of your logging needs.<br />
  * The way the message is output is controlled through handlers and formatters so you can use this driver in most cases.
  *
- * @package         Webiny\Component\Logger\Drivers
+ * @package         Webiny\Component\Logger\Driver
  */
 class Webiny implements LoggerDriverInterface
 {
@@ -207,16 +205,16 @@ class Webiny implements LoggerDriverInterface
     protected function _addRecord($level, $message, array $context = array())
     {
         if ($this->_handlers->count() < 1) {
-            throw new LoggerException('To log a record you must add at least one HandlerAbstract object to handle the messages.');
+            throw new LoggerException('To log a record you must add at least one HandlerAbstract object to handle the messages.'
+            );
         }
 
         $record = new Record();
-        $record->message = (string)$message;
-        $record->context = $context;
-        $record->level = $level;
-        $record->name = $this->_name;
-        $record->datetime = $this->datetime("now");
-        $record->extra = [];
+        $record->setLoggerName($this->_name);
+        $record->setMessage((string)$message);
+        $record->setContext($context);
+        $record->setLevel($level);
+        $record->setDatetime($this->datetime("now"));
 
         // check if any handler will handle this message
         $canHandle = false;
@@ -226,12 +224,12 @@ class Webiny implements LoggerDriverInterface
                 break;
             }
         }
-        // none found
+
         if (!$canHandle) {
             return false;
         }
 
-        /* @var $handler \Webiny\Component\Logger\Bridge\Webiny\HandlerAbstract */
+        /* @var $handler Webiny\HandlerAbstract */
         foreach ($this->_handlers as $handler) {
             if ($handler->canHandle($record)) {
                 $bubble = $handler->process(clone $record);

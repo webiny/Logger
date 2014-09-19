@@ -10,11 +10,11 @@
 Logger:
     Parameters:
         Logger.Class: \Webiny\Component\Logger\Logger
-        Logger.Driver.Class: \Webiny\Component\Logger\Drivers\Webiny
-        Logger.Processor.FileLine.Class: \Webiny\Component\Logger\Drivers\Webiny\Processors\FileLineProcessor
-        Logger.Processor.MemoryUsage.Class: \Webiny\Component\Logger\Drivers\Webiny\Processors\MemoryUsageProcessor
-        Logger.Formatter.File.Class: \Webiny\Component\Logger\Drivers\Webiny\Formatters\FileFormatter
-        Logger.Handlers.File.Class: \Webiny\Component\Logger\Drivers\Webiny\Handlers\FileHandler
+        Logger.Driver.Class: \Webiny\Component\Logger\Driver\Webiny
+        Logger.Processor.FileLine.Class: \Webiny\Component\Logger\Driver\Webiny\Processor\FileLineProcessor
+        Logger.Processor.MemoryUsage.Class: \Webiny\Component\Logger\Driver\Webiny\Processor\MemoryUsageProcessor
+        Logger.Formatter.File.Class: \Webiny\Component\Logger\Driver\Webiny\Formatter\FileFormatter
+        Logger.Handlers.File.Class: \Webiny\Component\Logger\Driver\Webiny\Handler\FileHandler
         Logger.LogFile: /var/www/projects/webiny/Vendors/Webiny/Component/Logger/Tests/UnitTest.log
     Services:
         Webiny:
@@ -30,8 +30,8 @@ Logger:
                 - [addProcessor, [%Logger.Processor.MemoryUsage.Class%]]
                 - [setFormatter, [%Logger.Formatter.File.Class%]]
     Configs:
-        Formatters:
+        Formatter:
             Default:
                 DateFormat: 'H:i:s d-m-Y'
             File:
-                RecordFormat: '%datetime% [%name%] [%level%]: %message%\nContext: %context%\nExtra: %extra%\n\n'
+                RecordFormat: '%datetime% [%loggerName%] [%level%]: %message%\nContext: %context%\nExtra: %extra%\n\n'

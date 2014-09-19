@@ -5,15 +5,14 @@
  * @copyright Copyright Webiny LTD
  */
 
-namespace Webiny\Component\Logger\Drivers\Webiny\Processors;
+namespace Webiny\Component\Logger\Driver\Webiny\Processor;
 
-use Webiny\Component\Logger\Bridge\Webiny\ProcessorInterface;
-use Webiny\Component\Logger\Bridge\Webiny\Record;
+use Webiny\Component\Logger\Driver\Webiny\Record;
 
 /**
  * FileLineProcessor adds 'file' and 'line' values to the Record 'extra' data
  *
- * @package Webiny\Component\Logger\Drivers\Webiny\Processors
+ * @package Webiny\Component\Logger\Driver\Webiny\Processor
  */
 class FileLineProcessor implements ProcessorInterface
 {
@@ -21,9 +20,8 @@ class FileLineProcessor implements ProcessorInterface
     /**
      * Processes a log record.
      *
-     * @param Record $record A record to format
+     * @param Record $record A record to process
      *
-     * @return Record The formatted record
      */
     public function processRecord(Record $record)
     {
@@ -31,7 +29,11 @@ class FileLineProcessor implements ProcessorInterface
         $backtrace = debug_backtrace();
         $backtrace = $backtrace[5];
 
-        $record->extra['file'] = $backtrace['file'];
-        $record->extra['line'] = $backtrace['line'];
+        $extraData = $record->getExtra();
+
+        $extraData['file'] = $backtrace['file'];
+        $extraData['line'] = $backtrace['line'];
+
+        $record->setExtra($extraData);
     }
 }
